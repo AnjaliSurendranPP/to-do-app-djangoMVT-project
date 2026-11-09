@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My To-Do App</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f5f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        button{
+            background:green;
+            border:none;
+            padding:3px;
+            border-radius: 5px;
+        }
+        .add-btn {
+            display: inline-block;
+            background: #635bdb;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .task {
+            background: #f7f7fb;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .task a {
+            margin-right: 10px;
+        }
+
+        .completed {
+            color: green;
+        }
+
+        .delete {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>My To-Do List</h1>
+    <a href="{% url 'add_task' %}" class="add-btn">
+        + Add New Task
+    </a>
+    <h2>Pending Tasks</h2>
+    {% for task in pending_tasks %}
+        <div class="task">
+            <h3>{{ task.title }}</h3>
+            <p>{{ task.description }}</p>
+            <p>Due Date: {{ task.due_date|default:"Not set" }}</p>
+            <div style="display: flex;">
+            <a href="{% url 'edit_task' task.id %}">Edit</a>
+            <a href="{% url 'delete_task' task.id %}" class="delete">
+                Delete
+            </a>
+            <form method="POST" action="{% url 'complete_task' task.id %}">
+                {% csrf_token %}
+                <button type="submit">Mark as Completed</button>
+            </form></div>
+        </div>
+    {% empty %}
+        <p>No pending tasks.</p>
+    {% endfor %}
+
+    <h2>Completed Tasks</h2>
+    {% for task in completed_tasks %}
+        <div class="task">
+            <h3 class="completed">{{ task.title }}</h3>
+            <p>{{ task.description }}</p>
+            <div style="display: flex;">
+            <a href="{% url 'delete_task' task.id %}" class="delete">
+                Delete
+            </a>
+            <form method="POST" action="{% url 'complete_task' task.id %}">
+                {% csrf_token %}
+                <button type="submit">Mark as Pending</button>
+            </form></div>
+        </div>
+    {% empty %}
+        <p>No completed tasks.</p>
+    {% endfor %}
+
+</div>
+
+</body>
+</html>
